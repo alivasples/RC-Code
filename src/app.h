@@ -30,7 +30,8 @@ private:
 	bool isDebugMode;
 
     //output time
-    fstream fout;
+    fstream fTime;
+    fstream fResult;
 
     //variables to store filenames
     string dividend;

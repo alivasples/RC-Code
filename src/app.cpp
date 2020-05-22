@@ -52,7 +52,11 @@ void TApp::Run(string queryApproach)
 {
 	// Create / Open File [queryApproach.result]
 	string mod = (isForAll?"_all":"_any");
-    fout.open((queryApproach+mod+".result").c_str(), ios::out | ios::app);
+	string outputTimesName = queryApproach + mod + ".time";
+	string outputResultName = queryApproach + mod + ".result";
+
+    fTime.open(outputTimesName.c_str(), ios::out | ios::app);
+    fResult.open(outputTimesName.c_str(), ios::out | ios::app);
     // Read the groups and map de i'th tuple to its group
     ReadGroups(groups);
 
@@ -75,7 +79,7 @@ void TApp::Run(string queryApproach)
     duration = ( clock() - start ) / (double) CLOCKS_PER_SEC;
     // Show and save the execution time
     cout << "duration: "<< duration << endl;
-    fout << duration << endl;
+    fResult << duration << endl;
 }
 
 
@@ -537,11 +541,17 @@ void TApp::IndexDivision()
     } // End For every divisor requirment of L2 (Bi)
 
 	// Printing the valid groups
+    int nrValidGroups = 0;
 	cout<<"Final Valid Groups (Quotient): {";
 	for(int i=0; i<MAXGROUPS; i++){
-		if(validGroups.test(i)) cout<<i<<",";
+		if(validGroups.test(i)){
+			cout<<i<<",";
+			nrValidGroups++;
+		}
 	}
 	cout<<"}"<<endl;
+	cout << "Nr Valid Groups: " << nrValidGroups << endl;
+	fResult << nrValidGroups << endl;
     // __Just for depuring__
 	DEBUG_MSG("Index Division Success"<<endl);
 }
@@ -691,6 +701,7 @@ void TApp::FTSDivision()
     // NOTE: For next update, many of the lines below probably could be inside the dividend loop
     // Reporting the answer
     // FOR ALL VERSION
+    int nrValidGroups = 0;
     if(isForAll){
 		cout << "\nQuocient: {";
 		// For every group
@@ -711,6 +722,7 @@ void TApp::FTSDivision()
 			if(passed)
 			{
 				cout << idGroup << ", ";
+				nrValidGroups++;
 			}
 		}
 		// Ending FTS division
@@ -737,11 +749,14 @@ void TApp::FTSDivision()
 			if(passed)
 			{
 				cout << idGroup << ", ";
+				nrValidGroups++;
 			}
 		}
 		// Ending FTS division
 		cout << "}" << endl << endl;
     }
+    cout << "Nr Valid Groups: " << nrValidGroups << endl;
+	fResult << nrValidGroups << endl;
 }
 
 

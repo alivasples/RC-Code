@@ -4,19 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/Attribute.cpp \
 ../src/DivisonQuery.cpp \
 ../src/HierarchyParser.cpp \
 ../src/app.cpp 
 
 OBJS += \
-./src/Attribute.o \
 ./src/DivisonQuery.o \
 ./src/HierarchyParser.o \
 ./src/app.o 
 
 CPP_DEPS += \
-./src/Attribute.d \
 ./src/DivisonQuery.d \
 ./src/HierarchyParser.d \
 ./src/app.d 
