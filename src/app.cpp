@@ -79,7 +79,7 @@ void TApp::Run(string queryApproach)
     duration = ( clock() - start ) / (double) CLOCKS_PER_SEC;
     // Show and save the execution time
     cout << "duration: "<< duration << endl;
-    fResult << duration << endl;
+    fTime << duration << endl;
 }
 
 
