@@ -56,7 +56,7 @@ void TApp::Run(string queryApproach)
 	string outputResultName = queryApproach + mod + ".result";
 
     fTime.open(outputTimesName.c_str(), ios::out | ios::app);
-    fResult.open(outputTimesName.c_str(), ios::out | ios::app);
+    fResult.open(outputResultName.c_str(), ios::out | ios::app);
     // Read the groups and map de i'th tuple to its group
     ReadGroups(groups);
 
