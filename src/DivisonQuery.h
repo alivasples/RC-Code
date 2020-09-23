@@ -18,13 +18,14 @@ public:
     Attribute requirement;
     string comparator;
     double threshold;
-
+    string thresOperator;
 
     DivisonQuery(const Attribute &skill, const Attribute &requirement, string comparator, float threshold) :
 		skill(skill),
 		requirement(requirement),
 		comparator(comparator),
-		threshold(threshold)
+		threshold(threshold),
+		thresOperator("+")
     { }
 
 
@@ -32,6 +33,8 @@ public:
     { }
 
     bool isTraditionalCompare();
+
+    double getOperatedFactor(const double& value);
 };
 
 

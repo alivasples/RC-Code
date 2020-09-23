@@ -128,6 +128,12 @@ void TApp::InputParser(char * fileName)
 
         //skill,requirement, threshold
         DivisonQuery tmp(skill,requirement,sfp.get_token(4), strtof(sfp.get_token(6).c_str(),NULL) );
+
+        //Define the operation for the factor (+,-,*,/)
+        if (sfp.get_num_tokens() > 8){
+        	tmp.thresOperator = sfp.get_token(8);
+        }
+
         // Add the query to the vector of query attributes
         queryAttributes.push_back(tmp);
     }
@@ -481,12 +487,15 @@ void TApp::IndexDivision()
 			DEBUG_MSG("Req Row: "<<currentReq+1<<", Att col: "<<currentAtt+1<<endl);
 			// Simple Float
 			if(floatBPTrees[currentAtt] != NULL){
+				// Load the requirement already operated. For example, if we want to compare t[Ai] < t[Ai]*0.5
+				// We compute the (t[Ai]*0.5) to execute the query then
+				double reqValue = attribute.getOperatedFactor(attsSimpleFloatObjects[currentAtt][currentReq]);
 				// Query
-				if(attribute.comparator == "=") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryEqual(attsSimpleFloatObjects[currentAtt][currentReq] +attribute.threshold);
-				else if(attribute.comparator == "<") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryLessThan(attsSimpleFloatObjects[currentAtt][currentReq] +attribute.threshold);
-				else if(attribute.comparator == "<=") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryLessThanOrEqual(attsSimpleFloatObjects[currentAtt][currentReq] +attribute.threshold);
-				else if(attribute.comparator == ">") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryGreaterThan(attsSimpleFloatObjects[currentAtt][currentReq] +attribute.threshold);
-				else if(attribute.comparator == ">=") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryGreaterThanOrEqual(attsSimpleFloatObjects[currentAtt][currentReq] +attribute.threshold);
+				if(attribute.comparator == "=") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryEqual(reqValue);
+				else if(attribute.comparator == "<") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryLessThan(reqValue);
+				else if(attribute.comparator == "<=") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryLessThanOrEqual(reqValue);
+				else if(attribute.comparator == ">") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryGreaterThan(reqValue);
+				else if(attribute.comparator == ">=") bpFloatResults[currentAtt] = floatBPTrees[currentAtt]->QueryGreaterThanOrEqual(reqValue);
 				DEBUG_MSG("This condition is satisfied by "<<bpFloatResults[currentAtt]->GetNumOfEntries()<<" float entries"<<endl);
 				/*// Loop
 				for(int i=0; i<bpFloatResults[currentAtt]->GetNumOfEntries(); i++){
@@ -618,13 +627,18 @@ void TApp::FTSDivision()
 				if(attribute.isTraditionalCompare()){
 					// Simple float attribute
 					if(attribute.skill.type == "float"){
+						// t[Ai]
 						float floatValue = atof(values.c_str());
-						DEBUG_MSG(floatValue<<" "<<attribute.comparator<<" "<<attsSimpleFloatObjects[currentAtt][currentReq]<<endl);
-						if((attribute.comparator == "=" and floatValue == attsSimpleFloatObjects[currentAtt][currentReq]+attribute.threshold)
-								or (attribute.comparator == "<" and floatValue < attsSimpleFloatObjects[currentAtt][currentReq]+attribute.threshold)
-								or (attribute.comparator == ">" and floatValue > attsSimpleFloatObjects[currentAtt][currentReq]+attribute.threshold)
-								or (attribute.comparator == "<=" and floatValue <= attsSimpleFloatObjects[currentAtt][currentReq]+attribute.threshold)
-								or (attribute.comparator == ">=" and floatValue >= attsSimpleFloatObjects[currentAtt][currentReq]+attribute.threshold)
+						// Load the requirement already operated. For example, if we want to compare t[Ai] < t[Ai]*0.5
+						// We compute the (t[Ai]*0.5) to execute the query then
+						double reqValue = attribute.getOperatedFactor(attsSimpleFloatObjects[currentAtt][currentReq]);
+						// __Trace
+						DEBUG_MSG(floatValue<<" "<<attribute.comparator<<" "<<attsSimpleFloatObjects[currentAtt][currentReq] << attribute.thresOperator << attribute.threshold <<endl);
+						if((attribute.comparator == "=" and floatValue == reqValue)
+								or (attribute.comparator == "<" and floatValue < reqValue)
+								or (attribute.comparator == ">" and floatValue > reqValue)
+								or (attribute.comparator == "<=" and floatValue <= reqValue)
+								or (attribute.comparator == ">=" and floatValue >= reqValue)
 								){
 							matchReqs[currentAtt] = true;
 						}
